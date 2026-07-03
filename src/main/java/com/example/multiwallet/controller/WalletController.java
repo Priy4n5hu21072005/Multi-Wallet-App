@@ -7,14 +7,31 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/users/{userId}/wallets")
+@RequestMapping("/wallets")
 public class WalletController {
+
     private final WalletService walletService;
-    public WalletController(WalletService walletService){
-        this.walletService=walletService;
+
+    public WalletController(WalletService walletService) {
+        this.walletService = walletService;
     }
-    @PostMapping
-    public Wallet createWallet(@PathVariable  UUID userId ,@RequestBody Wallet wallet){
-                return walletService.createWallet(userId, wallet);
+
+    // Get Wallet By Id
+    @GetMapping("/{walletId}")
+    public Wallet getWalletById(@PathVariable UUID walletId) {
+        return walletService.getWalletById(walletId);
+    }
+
+    // Update Wallet
+    @PutMapping("/{walletId}")
+    public Wallet updateWallet(@PathVariable UUID walletId,
+                               @RequestBody Wallet wallet) {
+        return walletService.updateWallet(walletId, wallet);
+    }
+
+    // Delete Wallet
+    @DeleteMapping("/{walletId}")
+    public void deleteWallet(@PathVariable UUID walletId) {
+        walletService.deleteWallet(walletId);
     }
 }
