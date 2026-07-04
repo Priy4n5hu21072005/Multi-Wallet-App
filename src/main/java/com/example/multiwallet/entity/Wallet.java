@@ -1,11 +1,16 @@
 package com.example.multiwallet.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "wallets")
 public class Wallet {
@@ -30,67 +35,4 @@ public class Wallet {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // No Args Constructor
-    public Wallet() {}
-
-    // Getters
-    public UUID getId() {
-        return id;
-    }
-
-    public String getWalletName() {
-        return walletName;
-    }
-
-    public BigDecimal getBalance() {
-        return balance;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    // Setters
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public void setWalletName(String walletName) {
-        this.walletName = walletName;
-    }
-
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    @PrePersist
-    public void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
 }

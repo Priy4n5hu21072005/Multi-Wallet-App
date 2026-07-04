@@ -4,6 +4,13 @@ import java.util.List;
 import java.util.UUID;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name="users")
 public class User {
@@ -39,35 +46,4 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Wallet> wallets;
-
-    // No Argments Constructer
-    public User(){}
-
-    // Getter
-    public UUID getId(){return id;}
-    public String getFullName(){return fullName;}
-    public String getEmail(){return email;}
-    public String getPassword(){return password;}
-    public String getPhoneNumber(){return phoneNumber;}
-    public LocalDateTime getCreatedAt(){return createdAt;}
-    public LocalDateTime getUpdatedAt(){return updatedAt;}
-
-    // Setter
-    public void setId(UUID id){this.id = id;}
-    public void setFullName(String fullName){this.fullName=fullName;}
-    public void setEmail(String email){this.email=email;}
-    public void setPassword(String password){this.password=password;}
-    public void setPhoneNumber(String phoneNumber){this.phoneNumber=phoneNumber;}
-    public void setCreatedAt(LocalDateTime createdAt){this.createdAt=createdAt;}
-    public void setUpdatedAt(LocalDateTime updatedAt){this.updatedAt=updatedAt;}
-
-    @PrePersist
-    public void onCreate(){
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-    @PreUpdate
-    public void onUpdate(){
-        this.updatedAt =LocalDateTime.now();
-    }
 }

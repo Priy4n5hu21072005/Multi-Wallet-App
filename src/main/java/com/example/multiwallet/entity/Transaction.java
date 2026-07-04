@@ -3,11 +3,16 @@ package com.example.multiwallet.entity;
 import com.example.multiwallet.entity.enums.TransactionStatus;
 import com.example.multiwallet.entity.enums.TransactionType;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "transactions")
 public class Transaction {
@@ -43,78 +48,4 @@ public class Transaction {
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
-
-    public Transaction(){}
-
-    public UUID getId(){
-        return id;
-    }
-
-    public Wallet getFromWallet(){
-        return fromWallet;
-    }
-
-    public Wallet getToWallet(){
-        return toWallet;
-    }
-
-    public BigDecimal getAmount(){
-        return amount;
-    }
-
-    public TransactionType getType(){
-        return type;
-    }
-
-    public TransactionStatus getStatus(){
-        return status;
-    }
-
-    public String getDescription(){
-        return description;
-    }
-
-    public LocalDateTime getCreatedAt(){
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt(){
-        return updatedAt;
-    }
-
-    public void setId(UUID id){
-        this.id=id;
-    }
-
-    public void setFromWallet(Wallet fromWallet){
-        this.fromWallet=fromWallet;
-    }
-
-    public void setToWallet(Wallet toWallet){
-        this.toWallet=toWallet;
-    }
-
-    public void setAmount(BigDecimal amount){
-        this.amount=amount;
-    }
-
-    public void setType(TransactionType type){
-        this.type=type;
-    }
-
-    public void setStatus(TransactionStatus status){
-        this.status=status;
-    }
-    public void setDescription(String description){
-        this.description=description;
-    }
-    @PrePersist
-    public void onCreatedAt(){
-        this.createdAt=LocalDateTime.now();
-        this.updatedAt=LocalDateTime.now();
-    }
-    @PreUpdate
-    public void onUpdatedAt(){
-        this.updatedAt=LocalDateTime.now();
-    }
 }
