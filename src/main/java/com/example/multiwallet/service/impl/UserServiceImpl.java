@@ -1,7 +1,13 @@
 package com.example.multiwallet.service.impl;
+
+import com.example.multiwallet.dto.user.RegisterUserRequest;
+import com.example.multiwallet.dto.user.UpdateUserRequest;
+import com.example.multiwallet.dto.user.UserResponse;
 import com.example.multiwallet.entity.User;
+import com.example.multiwallet.mapper.UserMapper;
 import com.example.multiwallet.repository.UserRepository;
 import com.example.multiwallet.service.UserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,32 +15,75 @@ import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
-    public UserServiceImpl(UserRepository userRepository){
-        this.userRepository=userRepository;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(UserRepository userRepository,
+                           UserMapper userMapper,
+                           PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public User registerUser(User user) {
-        if(userRepository.existsByEmail((user.getEmail()))){
-            throw new RuntimeException("Email Already exist");
+    public UserResponse registerUser(RegisterUserRequest request) {
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already exists");
         }
-        return userRepository.save(user);
+
+        User user = userMapper.toEntity(request);
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        User savedUser = userRepository.save(user);
+
+        return userMapper.toResponse(savedUser);
     }
 
     @Override
-    public User getUserById(UUID id) {
-        return userRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("User Not Found!"));
+    public UserResponse getUserById(UUID id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
+
+        return userMapper.toResponse(user);
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+
+        List<User> users = userRepository.findAll();
+
+        return users.stream()
+                .map(userMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public UserResponse updateUser(UUID id, UpdateUserRequest request) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
+
+        user.setFullName(request.getFullName());
+        user.setPhoneNumber(request.getPhoneNumber());
+
+        User updatedUser = userRepository.save(user);
+
+        return userMapper.toResponse(updatedUser);
     }
 
     @Override
     public void deleteUser(UUID id) {
+
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User Not Found");
+        }
+
         userRepository.deleteById(id);
     }
 }

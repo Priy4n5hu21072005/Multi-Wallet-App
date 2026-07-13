@@ -5,6 +5,7 @@ import com.example.multiwallet.entity.Transaction;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public class TransactionService {
+public interface TransactionService {
+    
     Transaction addMoney(UUID walletId , BigDecimal amount);
 }
