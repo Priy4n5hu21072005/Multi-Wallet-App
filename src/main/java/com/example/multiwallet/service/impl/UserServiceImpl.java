@@ -4,6 +4,9 @@ import com.example.multiwallet.dto.user.RegisterUserRequest;
 import com.example.multiwallet.dto.user.UpdateUserRequest;
 import com.example.multiwallet.dto.user.UserResponse;
 import com.example.multiwallet.entity.User;
+import com.example.multiwallet.exception.EmailAlreadyExists;
+import com.example.multiwallet.exception.PhoneNumberAlreadyExists;
+import com.example.multiwallet.exception.UserNotFound;
 import com.example.multiwallet.mapper.UserMapper;
 import com.example.multiwallet.repository.UserRepository;
 import com.example.multiwallet.service.UserService;
@@ -32,7 +35,10 @@ public class UserServiceImpl implements UserService {
     public UserResponse registerUser(RegisterUserRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new EmailAlreadyExists("Email already exists");
+        }
+        if (userRepository.existsByPhoneNumber(request.getPhoneNumber())){
+            throw new PhoneNumberAlreadyExists("Phone Number Already Exists");
         }
 
         User user = userMapper.toEntity(request);
@@ -42,13 +48,14 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
 
         return userMapper.toResponse(savedUser);
+
     }
 
     @Override
     public UserResponse getUserById(UUID id) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User Not Found"));
+                .orElseThrow(() -> new UserNotFound("User Not Found"));
 
         return userMapper.toResponse(user);
     }
