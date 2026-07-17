@@ -1,5 +1,6 @@
 package com.example.multiwallet.controller;
 import com.example.multiwallet.dto.user.RegisterUserRequest;
+import com.example.multiwallet.dto.user.UpdateUserRequest;
 import com.example.multiwallet.dto.user.UserResponse;
 import com.example.multiwallet.service.UserService;
 import jakarta.validation.Valid;
@@ -30,5 +31,10 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable UUID id){
          userService.deleteUser(id);
+    }
+
+    @PatchMapping("/{id}")
+    public UserResponse updateUser(@PathVariable UUID id , @Valid @RequestBody UpdateUserRequest request){
+        return userService.updateUser(id,request);
     }
 }

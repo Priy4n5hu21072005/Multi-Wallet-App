@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 @Getter
 @Setter
@@ -31,8 +32,23 @@ public class Wallet {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "wallets")
+    private List<Transaction> transactions;
+
+    @PrePersist
+    public void prePersist(){
+        createdAt=LocalDateTime.now();
+        updatedAt=LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate(){
+        updatedAt=LocalDateTime.now();
+    }
+
 
 }

@@ -74,10 +74,22 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateUser(UUID id, UpdateUserRequest request) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User Not Found"));
+                .orElseThrow(() -> new UserNotFound("User Not Found"));
 
-        user.setFullName(request.getFullName());
-        user.setPhoneNumber(request.getPhoneNumber());
+        // Duplicate Email check
+        if(request.getEmail() != null && !request.getEmail().equals(user.getEmail())){
+            if(userRepository.existsByEmail(request.getEmail())){
+                throw new EmailAlreadyExists("email Already exists");
+            }
+        }
+
+        // Duplicate Phone check
+        if(request.getPhoneNumber() != null && !request.getPhoneNumber().equals(user.getPhoneNumber())){
+            if (userRepository.existsByPhoneNumber(request.getPhoneNumber())){
+                throw new PhoneNumberAlreadyExists("Phone Number Already Exists");
+            }
+        }
+        userMapper.UpdateUserFromRequest(request,user);
 
         User updatedUser = userRepository.save(user);
 
@@ -88,7 +100,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(UUID id) {
 
         if (!userRepository.existsById(id)) {
-            throw new RuntimeException("User Not Found");
+            throw new UserNotFound("User Not Found");
         }
 
         userRepository.deleteById(id);
