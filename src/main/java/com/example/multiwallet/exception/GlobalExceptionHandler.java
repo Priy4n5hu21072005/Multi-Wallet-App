@@ -6,52 +6,74 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.View;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+
     @ExceptionHandler(EmailAlreadyExists.class)
-    public ResponseEntity<String> handleEmailException(EmailAlreadyExists ex) {
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleEmailException(EmailAlreadyExists ex) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error,HttpStatus.CONFLICT);
+
     }
 
     @ExceptionHandler(PhoneNumberAlreadyExists.class)
-    public ResponseEntity<String> handlePhoneException(PhoneNumberAlreadyExists ex) {
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(ex.getMessage());
+    public ResponseEntity<ErrorResponse> handlePhoneException(PhoneNumberAlreadyExists ex) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error,HttpStatus.CONFLICT);
+
     }
 
     @ExceptionHandler(UserNotFound.class)
-    public ResponseEntity<String> handleUserNotFoundException(UserNotFound ex) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFound ex) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String,String>> handleValidationException(MethodArgumentNotValidException ex){
+        Map <String,String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach(
+                error -> {
+                    String field = ((FieldError) error).getField();
+                    String msg = error.getDefaultMessage();
 
-        StringBuilder errors = new StringBuilder();
-
-        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            errors.append(error.getField())
-                    .append(" : ")
-                    .append(error.getDefaultMessage())
-                    .append("\n");
-        }
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(errors.toString());
+                    errors.put(field,msg);
+                }
+        );
+        return new ResponseEntity<>(errors,HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(Exception ex) {
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Something went wrong: " + ex.getMessage());
+    public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

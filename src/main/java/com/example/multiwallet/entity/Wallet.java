@@ -13,7 +13,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "wallets")
+@Table(name = "wallet")
 public class Wallet {
 
     @Id
@@ -36,8 +36,11 @@ public class Wallet {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "wallets")
-    private List<Transaction> transactions;
+    @OneToMany(mappedBy = "fromWallet")
+    private List<Transaction> sentTransactions;
+
+    @OneToMany(mappedBy = "toWallet")
+    private List<Transaction> receivedTransactions;
 
     @PrePersist
     public void prePersist(){
