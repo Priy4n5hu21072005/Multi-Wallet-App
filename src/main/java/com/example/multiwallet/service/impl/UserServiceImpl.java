@@ -4,6 +4,7 @@ import com.example.multiwallet.dto.user.RegisterUserRequest;
 import com.example.multiwallet.dto.user.UpdateUserRequest;
 import com.example.multiwallet.dto.user.UserResponse;
 import com.example.multiwallet.entity.User;
+import com.example.multiwallet.entity.enums.Role;
 import com.example.multiwallet.exception.EmailAlreadyExists;
 import com.example.multiwallet.exception.PhoneNumberAlreadyExists;
 import com.example.multiwallet.exception.UserNotFound;
@@ -44,6 +45,8 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toEntity(request);
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        user.setRole(Role.ROLE_USER);
 
         User savedUser = userRepository.save(user);
 

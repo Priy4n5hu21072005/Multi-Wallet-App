@@ -12,7 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-
+import com.example.multiwallet.entity.enums.Role;
 @Getter
 @Setter
 @NoArgsConstructor
@@ -56,6 +56,10 @@ public class User implements UserDetails {
     public void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+
+        if(this.role==null){
+            this.role = Role.ROLE_USER;
+        }
     }
 
     @PreUpdate
@@ -65,7 +69,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities(){
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
@@ -92,4 +96,8 @@ public class User implements UserDetails {
     public boolean isEnabled(){
         return true;
     }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="role",nullable = false)
+    private Role role = Role.ROLE_USER;
 }
