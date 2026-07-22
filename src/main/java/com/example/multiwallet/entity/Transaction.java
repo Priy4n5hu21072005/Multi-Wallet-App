@@ -25,7 +25,6 @@ public class Transaction {
     private Wallet fromWallet;
 
     @ManyToOne
-
     @JoinColumn(name = "to_wallet_id")
     private Wallet toWallet;
 
@@ -40,7 +39,7 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
 
-    @Column(nullable = true , length = 255)
+    @Column(length = 255)
     private String description;
 
     @Column(nullable = false)
