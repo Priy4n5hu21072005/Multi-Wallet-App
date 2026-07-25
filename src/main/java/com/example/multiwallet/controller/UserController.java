@@ -1,9 +1,13 @@
 package com.example.multiwallet.controller;
+
 import com.example.multiwallet.dto.user.RegisterUserRequest;
 import com.example.multiwallet.dto.user.UpdateUserRequest;
 import com.example.multiwallet.dto.user.UserResponse;
+import com.example.multiwallet.entity.User;
 import com.example.multiwallet.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,28 +17,41 @@ import java.util.UUID;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+
     public UserController(UserService userService){
-        this.userService=userService;
+        this.userService = userService;
     }
+
     @PostMapping("/register")
-    public UserResponse registerUser(@Valid @RequestBody RegisterUserRequest request){
-        return userService.registerUser(request);
+    public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterUserRequest request) {
+        userService.registerUser(request);
+        return ResponseEntity.ok("OTP sent successfully to your email.");
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getMyProfile(@AuthenticationPrincipal User currentUser) {
+        UserResponse response = userService.getUserById(currentUser.getId());
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping
-    public List<UserResponse> getAllUser(){
-        return userService.getAllUsers();
+    public ResponseEntity<List<UserResponse>> getAllUsers(){
+        return ResponseEntity.ok(userService.getAllUsers());
     }
+
     @GetMapping("/{id}")
-    public UserResponse getUserById(@PathVariable UUID id){
-        return userService.getUserById(id);
+    public ResponseEntity<UserResponse> getUserById(@PathVariable UUID id){
+        return ResponseEntity.ok(userService.getUserById(id));
     }
+
     @DeleteMapping("/{id}")
-    public void deleteUserById(@PathVariable UUID id){
-         userService.deleteUser(id);
+    public ResponseEntity<String> deleteUserById(@PathVariable UUID id){
+        userService.deleteUser(id);
+        return ResponseEntity.ok("User deleted successfully");
     }
 
     @PatchMapping("/{id}")
-    public UserResponse updateUser(@PathVariable UUID id , @Valid @RequestBody UpdateUserRequest request){
-        return userService.updateUser(id,request);
+    public ResponseEntity<UserResponse> updateUser(@PathVariable UUID id, @Valid @RequestBody UpdateUserRequest request){
+        return ResponseEntity.ok(userService.updateUser(id, request));
     }
 }

@@ -1,7 +1,10 @@
 package com.example.multiwallet.controller;
 
-import com.example.multiwallet.entity.Wallet;
+import com.example.multiwallet.dto.wallet.WalletRequest;
+import com.example.multiwallet.dto.wallet.WalletResponse;
 import com.example.multiwallet.service.WalletService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,16 +20,14 @@ public class UserWalletController {
         this.walletService = walletService;
     }
 
-    // Create Wallet
     @PostMapping
-    public Wallet createWallet(@PathVariable UUID userId,
-                               @RequestBody Wallet wallet) {
-        return walletService.createWallet(userId, wallet);
+    public ResponseEntity<WalletResponse> createWallet(@PathVariable UUID userId,
+                                                       @Valid @RequestBody WalletRequest request) {
+        return ResponseEntity.ok(walletService.createWallet(userId, request));
     }
 
-    // Get All Wallets of a User
     @GetMapping
-    public List<Wallet> getWalletsByUser(@PathVariable UUID userId) {
-        return walletService.getWalletsByUser(userId);
+    public ResponseEntity<List<WalletResponse>> getWalletsByUser(@PathVariable UUID userId) {
+        return ResponseEntity.ok(walletService.getWalletsByUser(userId));
     }
 }

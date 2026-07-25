@@ -20,11 +20,20 @@ public class Wallet {
     @GeneratedValue
     private UUID id;
 
+    @Column(nullable = false, unique = true, length = 30)
+    private String walletNumber;
+
     @Column(nullable = false)
     private String walletName;
 
     @Column(nullable = false)
-    private BigDecimal balance;
+    private BigDecimal balance = BigDecimal.ZERO;
+
+    @Column(nullable = false, length = 10)
+    private String currency = "INR";
+
+    @Column(nullable = false)
+    private boolean isDefault = false;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -44,13 +53,22 @@ public class Wallet {
 
     @PrePersist
     public void prePersist(){
-        createdAt=LocalDateTime.now();
-        updatedAt=LocalDateTime.now();
+        if (this.walletNumber == null || this.walletNumber.trim().isEmpty()) {
+            this.walletNumber = "WAL-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        }
+        if (this.balance == null) {
+            this.balance = BigDecimal.ZERO;
+        }
+        if (this.currency == null) {
+            this.currency = "INR";
+        }
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
     public void preUpdate(){
-        updatedAt=LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
 
